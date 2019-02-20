@@ -1,35 +1,52 @@
 import React, { Component } from 'react';
-import {BrowserRouter as Router, Route, } from 'react-router-dom';
-import {Provider}  from 'react-redux'
-import store from './store'
-import Navbar from './components/layout/Navbar'
-import Footer from './components/layout/Footer';
-import Login from './components/login/Login'
-import Register from './components/register/Register'
-import Home from './components/home/Home'
-import New from './components/home/New'
 import './App.css';
-import Landing from './components/layout/Landing'
+import Navbar from './components/Navbar'
+import Register from './components/auth/Register'
+import Login from './components/auth/Login';
+import Post from './components/post/Post'
+import Blog from './components/post/Blog'
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import Singlepost from './components/post/SinglePost';
+
 
 class App extends Component {
+  state={
+    isAuth:false,
+    token:null,
+    userId:null
+  }
+  componentDidMount(){
+    const token = localStorage.getItem('token');
+    const expiryDate = localStorage.getItem('expiryDate');
+    if(!token || !expiryDate)
+    {
+      return;
+    }
+    if(new Date(expiryDate) <= new Date())
+    {
+      this.logoutHandler();
+      return;
+    }
+  }
+  
+  // getDatafromChild=(token)=>{
+  //   this.setState(token)
+  //   console.log(token)
+  // }
   render() {
     return (
-      <Provider store={store }>
-          <Router>
+      <Router>
+        <div className="App">
+          <Navbar/>
+          <Route exact path="/register" component={Register} />
+          <Route exact path="/login"  component={Login} />
+          <Route exact path="/newpost" component={Post} />
+          <Route exact path ="/" component={Blog} />
+          <Route exact path ="/:blogId" component={Singlepost}/>
 
-          <div className="App">
           
-              <Navbar/>
-              <Route exact path="/" component={Landing} />
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/register" component={Register} />
-              <Route exact path="/home" component={Home} />
-              <Route exact path="/new" component={New} />
-              <Footer/>
-          
-          </div>
-          </Router>
-      </Provider>
+        </div>
+      </Router>
     );
   }
 }
